@@ -40,6 +40,7 @@ app.post('/login/userCheck', (req, res) => {
     })
 });
 
+
 app.get('/allUsers', (req, res) => {
     pool.getConnection((err, connection) => {
         if (err) console.log(err);
@@ -148,6 +149,45 @@ app.post('/postBookDetails', (req, res) => {
             } else {
                 // console.log(err)
                 res.send(err);
+            }
+        })
+    })
+});
+
+app.post('/postMyAds', (req, res) => {
+
+    pool.getConnection((err, connection) => {
+        if (err) throw err
+
+        const params = req.body
+        console.log(params);
+        connection.query('INSERT INTO user_ads SET ?', params, (err, rows) => {
+            connection.release() // return the connection to pool
+            if (!err) {
+                res.send({ "message": "Data Inserted " });
+            } else {
+                // console.log(err)
+                res.send({ "Error": err });
+            }
+        })
+    })
+});
+
+
+app.post('/deleteMyAds', (req, res) => {
+
+    pool.getConnection((err, connection) => {
+        if (err) throw err
+
+        const params = [req.body.phoneNumber, req.body.bookName];
+        console.log(params);
+        connection.query('Delete From user_ads Where phoneNumber = ? and bookName = ?', params, (err, rows) => {
+            connection.release() // return the connection to pool
+            if (!err) {
+                res.send({ "message": "Data deleted ", "info": rows });
+            } else {
+                // console.log(err)
+                res.send({ "Error": err });
             }
         })
     })
