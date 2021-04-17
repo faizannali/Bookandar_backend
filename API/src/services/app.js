@@ -21,6 +21,7 @@ const pool = mysql.createPool({
     port: 3306
 });
 
+//user Login
 app.post('/login/userCheck', (req, res) => {
     pool.getConnection((err, connection) => {
         if (err) console.log(err);
@@ -35,6 +36,25 @@ app.post('/login/userCheck', (req, res) => {
             }
             else if (data) {
                 res.send(JSON.parse('{"message":"user found"}'));
+            }
+        })
+    })
+});
+
+//User Signup
+app.post('/signUp', (req, res) => {
+
+    pool.getConnection((err, connection) => {
+        if (err) throw err
+
+        const params = req.body
+        connection.query('INSERT INTO userinfo SET ?', params, (err, rows) => {
+            connection.release() // return the connection to pool
+            if (!err) {
+                res.send({ "message": "User registered successfully." })
+            } else {
+                // console.log(err)
+                res.send(err)
             }
         })
     })
@@ -60,6 +80,27 @@ app.get('/allUsers', (req, res) => {
     })
 });
 
+//Insert Book Details
+app.post('/postBookDetails', (req, res) => {
+
+    pool.getConnection((err, connection) => {
+        if (err) throw err
+
+        const params = req.body
+        console.log(params);
+        connection.query('INSERT INTO bookinfo SET ?', params, (err, rows) => {
+            connection.release() // return the connection to pool
+            if (!err) {
+                res.send({ "message": "The data from table are:11 " });
+            } else {
+                // console.log(err)
+                res.send(err);
+            }
+        })
+    })
+});
+
+//update Book Details
 
 app.post('/books/updateBook', (req, res) => {
     pool.getConnection((err, connection) => {
@@ -81,6 +122,28 @@ app.post('/books/updateBook', (req, res) => {
     })
 });
 
+
+//fetch all book details
+app.get('/fetch/bookDetails', (req, res) => {
+    pool.getConnection((err, connection) => {
+        const params = req.body
+        if (err) throw err
+        console.log("----------------", params);
+        connection.query('SELECT * FROM bookinfo;', (err, data) => {
+            connection.release() // return the connection to pool
+            if (!err) {
+                res.send({ "message": "Done", "rows": data });
+            } else {
+                console.log(err)
+            }
+            console.log('The data from bookDetails table are: \n', data)
+        })
+    })
+});
+
+
+
+//update my profile
 app.post('/books/updateUserProfile', (req, res) => {
     pool.getConnection((err, connection) => {
         if (err) throw err
@@ -101,59 +164,7 @@ app.post('/books/updateUserProfile', (req, res) => {
     })
 });
 
-app.get('/fetch/bookDetails', (req, res) => {
-    pool.getConnection((err, connection) => {
-        const params = req.body
-        if (err) throw err
-        console.log("----------------", params);
-        connection.query('SELECT * FROM bookinfo;', (err, data) => {
-            connection.release() // return the connection to pool
-            if (!err) {
-                res.send({ "message": "Done", "rows": data });
-            } else {
-                console.log(err)
-            }
-            console.log('The data from bookDetails table are: \n', data)
-        })
-    })
-});
-
-app.post('/signUp', (req, res) => {
-
-    pool.getConnection((err, connection) => {
-        if (err) throw err
-
-        const params = req.body
-        connection.query('INSERT INTO userinfo SET ?', params, (err, rows) => {
-            connection.release() // return the connection to pool
-            if (!err) {
-                res.send({ "message": "User registered successfully." })
-            } else {
-                // console.log(err)
-                res.send(err)
-            }
-        })
-    })
-});
-app.post('/postBookDetails', (req, res) => {
-
-    pool.getConnection((err, connection) => {
-        if (err) throw err
-
-        const params = req.body
-        console.log(params);
-        connection.query('INSERT INTO bookinfo SET ?', params, (err, rows) => {
-            connection.release() // return the connection to pool
-            if (!err) {
-                res.send({ "message": "The data from table are:11 " });
-            } else {
-                // console.log(err)
-                res.send(err);
-            }
-        })
-    })
-});
-
+//Personal Ads posted by users
 app.post('/postMyAds', (req, res) => {
 
     pool.getConnection((err, connection) => {
@@ -173,7 +184,7 @@ app.post('/postMyAds', (req, res) => {
     })
 });
 
-
+//delete my Ads
 app.post('/deleteMyAds', (req, res) => {
 
     pool.getConnection((err, connection) => {
